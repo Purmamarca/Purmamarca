@@ -1,16 +1,45 @@
-## Hi there 👋
+<div align="center">
 
-<!--
-**Purmamarca/Purmamarca** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+# 👾 ARKANOID — Purmamarca Edition
 
-Here are some ideas to get you started:
+### 🕹️ [▶️ PLAY NOW — Click here to launch the game!](https://purmamarca.github.io/Purmamarca/arkanoid.html)
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+</div>
+
+---
+
+<div align="center">
+
+```
+╔═══════════════════════════════════╗
+║  ⚡  ARKANOID  ·  NEON EDITION  ⚡ ║
+╚═══════════════════════════════════╝
+```
+
+| Feature      | Details                                              |
+| ------------ | ---------------------------------------------------- |
+| 🎮 Levels    | 5 unique layouts (loops for endless play)            |
+| ⚡ Power-ups | WIDE · SLOW · FAST · MULTI · STICKY · LASER · SHIELD |
+| 💥 Bricks    | Normal · Silver (2 hits) · Gold (indestructible)     |
+| 🌟 Effects   | Neon glow · particle explosions · ball trails        |
+| 🏆 Hi-Score  | Saved locally in your browser                        |
+
+</div>
+
+---
+
+### 🕹️ Controls
+
+| Action                     | Keyboard         | Mouse / Touch        |
+| -------------------------- | ---------------- | -------------------- |
+| Move paddle                | `← →` Arrow keys | Move cursor / finger |
+| Launch ball                | `Space`          | `Space`              |
+| Fire laser _(when active)_ | Click canvas     | Tap canvas           |
+
+---
+
+<div align="center">
+
+_Built with vanilla HTML5 Canvas · No dependencies · Runs in any browser_
+
+</div>
