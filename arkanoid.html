@@ -156,6 +156,30 @@
       #gameCanvas {
         display: block;
         background: transparent;
+        outline: none;
+        cursor: crosshair;
+      }
+
+      /* Tap-to-launch hint inside canvas */
+      #tap-hint {
+        position: absolute;
+        bottom: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 11px;
+        letter-spacing: 3px;
+        color: var(--neon-cyan);
+        font-family: 'Share Tech Mono', monospace;
+        pointer-events: none;
+        z-index: 12;
+        animation: tapPulse 1.2s ease-in-out infinite;
+        white-space: nowrap;
+        text-shadow: 0 0 8px var(--neon-cyan);
+        display: none;
+      }
+      @keyframes tapPulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.3; }
       }
       /* Corner decorations */
       #canvas-container::before,
@@ -359,7 +383,10 @@
 
       <!-- Canvas -->
       <div id="canvas-container">
-        <canvas id="gameCanvas"></canvas>
+        <canvas id="gameCanvas" tabindex="0"></canvas>
+
+        <!-- Tap to launch hint -->
+        <div id="tap-hint">▶ CLICK / TAP TO LAUNCH</div>
 
         <!-- Level label inside canvas -->
         <div id="level-banner">LEVEL 1</div>
@@ -369,10 +396,10 @@
           <div class="overlay-title">ARKANOID</div>
           <div class="overlay-subtitle">PURMAMARCA EDITION</div>
           <div class="overlay-info">
-            ← → / MOUSE &nbsp;·&nbsp; MOVE PADDLE<br />
-            SPACE &nbsp;·&nbsp; LAUNCH BALL
+            ← → / MOUSE / TOUCH &nbsp;·&nbsp; MOVE PADDLE<br />
+            CLICK / TAP / SPACE &nbsp;·&nbsp; LAUNCH BALL
           </div>
-          <button class="btn" id="btn-start">INSERT COIN</button>
+          <button class="btn" id="btn-start">CLICK TO PLAY</button>
         </div>
 
         <!-- Game over screen -->
@@ -408,7 +435,7 @@
       <div id="powerup-bar"></div>
 
       <div id="controls-hint">
-        MOUSE OR ARROW KEYS TO MOVE &nbsp;·&nbsp; SPACE TO LAUNCH
+        MOUSE / TOUCH TO MOVE &nbsp;·&nbsp; CLICK / TAP / SPACE TO LAUNCH
       </div>
     </div>
 
@@ -702,8 +729,20 @@
           });
           window.addEventListener("keyup", (e) => (this.keys[e.code] = false));
 
-          // Click canvas to fire laser
-          canvas.addEventListener("click", () => {
+          // Click/Tap canvas — launch ball OR fire laser OR start game
+          canvas.addEventListener("pointerdown", (e) => {
+            e.preventDefault();
+            canvas.focus();
+            if (this.state === "idle") {
+              document.getElementById("btn-start").click();
+              return;
+            }
+            if (this.state !== "playing") return;
+            // 1. Launch stuck balls
+            const hadStuck = this.balls.some(b => b.stuck);
+            this.balls.forEach(b => { if (b.stuck) b.stuck = false; });
+            if (hadStuck) return;
+            // 2. Fire laser if active
             if (this.activePU.laser && this.laserCooldown <= 0) {
               this.laserCooldown = 18;
               const px = this.paddleX + this.paddleW / 2;
@@ -712,6 +751,7 @@
             }
           });
 
+          this.tapHint = document.getElementById('tap-hint');
           this.updateHUD();
         }
 
@@ -1013,6 +1053,7 @@
           this.updateHUD();
           if (this.lives <= 0) {
             this.state = "gameover";
+            if (this.tapHint) this.tapHint.style.display = 'none';
             if (this.score > this.hiScore) {
               this.hiScore = this.score;
               localStorage.setItem("arkanoid_hi", this.hiScore);
@@ -1029,6 +1070,7 @@
             this.resetBall();
             this.activePU = {};
             this.renderPUBar();
+            this.updateTapHint();
           }
         }
 
@@ -1342,7 +1384,15 @@
 
         start() {
           this.state = "playing";
+          canvas.focus();
           this.showLevelBanner();
+          this.updateTapHint();
+        }
+
+        updateTapHint() {
+          if (!this.tapHint) return;
+          const hasStuck = this.balls.some(b => b.stuck);
+          this.tapHint.style.display = (this.state === 'playing' && hasStuck) ? 'block' : 'none';
         }
 
         reset() {
@@ -1361,7 +1411,9 @@
           this.renderPUBar();
           this.updateHUD();
           this.state = "playing";
+          canvas.focus();
           this.showLevelBanner();
+          this.updateTapHint();
         }
       }
 
@@ -1375,6 +1427,7 @@
         lastTime = ts;
         game.update(dt);
         game.draw();
+        game.updateTapHint();
         requestAnimationFrame(loop);
       }
 
@@ -1396,6 +1449,7 @@
 
       // ── Init ─────────────────────────────────────────
       game = new Game();
+      canvas.focus();
       requestAnimationFrame(loop);
     </script>
   </body>
